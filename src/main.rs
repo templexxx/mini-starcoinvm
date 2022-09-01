@@ -51,6 +51,9 @@ fn main() {
     {
         (block_state_root, mock_chain_state, txs) = local_file_state(block_hash, file_helper);
     }
+    #[cfg(feature = "from_mock")]
+    {
+    }
 
     let execution_state_root = block_executor(&mock_chain_state, txs).unwrap();
     assert_eq!(block_state_root, execution_state_root);
