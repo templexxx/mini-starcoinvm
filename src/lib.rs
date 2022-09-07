@@ -14,6 +14,7 @@ use starcoin_types::error::BlockExecutorError;
 use starcoin_vm_runtime::starcoin_vm::StarcoinVM;
 use starcoin_vm_types::transaction::{Transaction, TransactionOutput, TransactionStatus};
 use std::sync::Arc;
+use starcoin_vm_types::state_view::StateView;
 
 mod file_helper;
 mod mock_chain_state;
@@ -70,7 +71,7 @@ pub fn local_file_state(
 
 pub fn mock_state(
     block_hash: HashValue,
-) -> (HashValue, MockChainState<FileStateView>, Vec<Transaction>) {
+) -> (HashValue, MockChainState<MockStateView>, Vec<Transaction>) {
 
     (
         HashValue::random(),
