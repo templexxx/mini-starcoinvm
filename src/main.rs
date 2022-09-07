@@ -1,5 +1,5 @@
 use clap::Parser;
-use mini_starcoin_vm::local_file_state;
+use mini_starcoin_vm::{local_file_state, mock_state};
 #[cfg(feature = "from_remote")]
 use mini_starcoin_vm::remote_state;
 use mini_starcoin_vm::{block_executor, FileHelper};
@@ -7,6 +7,7 @@ use starcoin_crypto::HashValue;
 #[cfg(feature = "from_remote")]
 use starcoin_rpc_client::RpcClient;
 use std::sync::Arc;
+use starcoin_vm_types::transaction::Transaction;
 
 #[derive(Parser)]
 struct Options {
@@ -23,7 +24,6 @@ struct Options {
 fn main() {
     let opts: Options = Options::parse();
     let block_hash = opts.block_hash;
-    let file_helper = Arc::new(FileHelper::new(opts.prefix_path));
 
     let block_state_root;
     let mock_chain_state;
@@ -40,6 +40,8 @@ fn main() {
             "barnard" => "ws://barnard.seed.starcoin.org:9870",
             _ => panic!("network not support yet"),
         };
+        let file_helper = Arc::new(FileHelper::new(opts.prefix_path));
+
 
         file_helper.init_file_path(block_hash).unwrap();
         client = Arc::new(RpcClient::connect_websocket(chain_network).unwrap());
@@ -49,10 +51,13 @@ fn main() {
 
     #[cfg(feature = "from_file")]
     {
+        let file_helper = Arc::new(FileHelper::new(opts.prefix_path.clone()));
+
         (block_state_root, mock_chain_state, txs) = local_file_state(block_hash, file_helper);
     }
     #[cfg(feature = "from_mock")]
     {
+        (block_state_root, mock_chain_state, txs) = mock_state(block_hash);
     }
 
     let execution_state_root = block_executor(&mock_chain_state, txs).unwrap();

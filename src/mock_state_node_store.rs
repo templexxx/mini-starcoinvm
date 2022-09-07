@@ -5,7 +5,9 @@ use starcoin_crypto::HashValue;
 use starcoin_rpc_client::RpcClient;
 use starcoin_state_store_api::{StateNode, StateNodeStore};
 use std::collections::BTreeMap;
+use std::fmt::Debug;
 use std::sync::Arc;
+use serde::Serialize;
 
 pub struct MockStateNodeStore {
     store: starcoin_state_tree::mock::MockStateNodeStore,
@@ -21,6 +23,15 @@ impl MockStateNodeStore {
             store: starcoin_state_tree::mock::MockStateNodeStore::new(),
             handler: Box::new(move |node_hash: HashValue| {
                 file_helper.deserialize_from_file_for_vev_u8(block_hash, &node_hash)
+            }),
+        }
+    }
+    
+    pub fn new_mock_store() -> impl StateNodeStore {
+        MockStateNodeStore {
+            store: Default::default(),
+            handler: Box::new(move |node_hash: HashValue| {
+                mock_for_vev_u8()
             }),
         }
     }
@@ -45,6 +56,12 @@ impl MockStateNodeStore {
             }),
         }
     }
+}
+
+pub fn mock_for_vev_u8<>() -> anyhow::Result<Option<Vec<u8>>>
+{
+    Ok(None)
+
 }
 
 impl StateNodeStore for MockStateNodeStore {

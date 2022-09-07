@@ -94,3 +94,21 @@ impl StateView for FileStateView {
         false
     }
 }
+
+pub struct MockStateView {}
+
+impl MockStateView{
+    pub fn new() -> MockStateView{
+        MockStateView{}
+    }
+}
+
+impl StateView for MockStateView {
+    fn get(&self, access_path: &AccessPath) -> anyhow::Result<Option<Vec<u8>>> {
+        Ok(None)
+    }
+
+    fn is_genesis(&self) -> bool {
+        false
+    }
+}

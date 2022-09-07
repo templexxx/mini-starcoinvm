@@ -1,5 +1,5 @@
 pub use crate::file_helper::FileHelper;
-use crate::mock_state_view::FileStateView;
+use crate::mock_state_view::{FileStateView, MockStateView};
 #[cfg(any(feature = "from_remote", feature = "test"))]
 use crate::mock_state_view::RemoteStateView;
 use anyhow::anyhow;
@@ -65,6 +65,17 @@ pub fn local_file_state(
         block.header.state_root(),
         MockChainState::new(state_view.state_root(), state_view, state_node_store),
         types::try_into_transactions(&block_parent, &block),
+    )
+}
+
+pub fn mock_state(
+    block_hash: HashValue,
+) -> (HashValue, MockChainState<FileStateView>, Vec<Transaction>) {
+
+    (
+        HashValue::random(),
+        MockChainState::new(HashValue::random(), MockStateView::new(), MockStateNodeStore::new_mock_store()),
+        vec![],
     )
 }
 
